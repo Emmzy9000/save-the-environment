@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Details - Save the Environment</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Project Details</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="projects.html">Projects</a>
+        </nav>
+    </header>
+    <main>
+        <section id="project-details">
+            <p>Loading project...</p>
+        </section>
+        <section id="edit-section" style="display:none;max-width:600px;margin:auto;"></section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Save the Environment Initiative</p>
+    </footer>
+<script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyCeTfoIIWlPkn68sZe-0m8oHUgxLgIiyRA",
+        authDomain: "save-the-environment-49649.firebaseapp.com",
+        projectId: "save-the-environment-49649",
+        storageBucket: "save-the-environment-49649.firebasestorage.app",
+        messagingSenderId: "724730117051",
+        appId: "1:724730117051:web:4bec6010aedccec0a5e29e",
+        measurementId: "G-S4ZSM54DY1"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    var db = firebase.firestore();
+    function getQueryParam(name) {
+        const url = new URL(window.location.href);
+        return url.searchParams.get(name);
+    }
+    const id = getQueryParam('id');
+    function renderProject(data) {
+        let html = `<div style="border:1px solid #e0e0e0;padding:2em;border-radius:12px;max-width:600px;margin:auto;background:#fafafa;">
+            <h2 style="margin-bottom:0.2em;">${data.title}</h2>
+            <div style="font-size:1.1em;margin-bottom:1em;color:#388e3c;"><strong>${data.category}</strong></div>
+            <hr style="margin:1em 0;">
+            <p><strong>Goal:</strong> ${data.goal}</p>
+            <p><strong>Activities:</strong> ${data.activities}</p>
+            <p><strong>Target Group:</strong> ${data.target}</p>
+            <p><strong>Impact Metrics:</strong> ${data.impact}</p>
+            <p><strong>Status:</strong> <span style="color:#1976d2;font-weight:bold;">${data.status}</span></p>
+            <button id="edit-btn">Edit</button>
+        </div>`;
+        document.getElementById('project-details').innerHTML = html;
+        document.getElementById('edit-btn').onclick = function() {
+            showEditForm(data);
+        };
+    }
+    function showEditForm(data) {
+        document.getElementById('edit-section').style.display = 'block';
+        document.getElementById('edit-section').innerHTML = `
+            <h2>Edit Project</h2>
+            <form id="edit-form">
+                <label>Title:<br><input type="text" name="title" value="${data.title}" required></label><br>
+                <label>Category:<br><input type="text" name="category" value="${data.category}" required></label><br>
+                <label>Goal:<br><input type="text" name="goal" value="${data.goal}" required></label><br>
+                <label>Activities:<br><textarea name="activities" required>${data.activities}</textarea></label><br>
+                <label>Target Group:<br><input type="text" name="target" value="${data.target}" required></label><br>
+                <label>Impact Metrics:<br><input type="text" name="impact" value="${data.impact}" required></label><br>
+                <label>Status:<br><input type="text" name="status" value="${data.status}" required></label><br>
+                <button type="submit">Save Changes</button>
+            </form>
+            <div id="edit-status" style="margin-top:1em;"></div>
+        `;
+        document.getElementById('edit-form').onsubmit = function(e) {
+            e.preventDefault();
+            var form = e.target;
+            var updated = {
+                title: form.title.value,
+                category: form.category.value,
+                goal: form.goal.value,
+                activities: form.activities.value,
+                target: form.target.value,
+                impact: form.impact.value,
+                status: form.status.value
+            };
+            db.collection('projects').doc(id).update(updated).then(function() {
+                document.getElementById('edit-status').innerText = 'Project updated!';
+                document.getElementById('edit-section').style.display = 'none';
+                loadProject();
+            }).catch(function(err) {
+                document.getElementById('edit-status').innerText = 'Error: ' + err.message;
+            });
+        };
+    }
+    function loadProject() {
+        db.collection('projects').doc(id).get().then(function(doc) {
+            if (!doc.exists) {
+                document.getElementById('project-details').innerHTML = '<p style="color:red;">Project not found.</p>';
+                return;
+            }
+            renderProject(doc.data());
+        }).catch(function(err) {
+            document.getElementById('project-details').innerHTML = `<p style='color:red;'>Error loading project: ${err.message}</p>`;
+        });
+    }
+    loadProject();
+</script>
+</body>
+</html>

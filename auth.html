@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Save the Environment</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <header>
+        <h1>Admin Login</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="admin.html">Admin</a>
+        </nav>
+    </header>
+    <main>
+        <section>
+      <form id="login-form">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
+        <button type="button" id="login-btn">Login</button>
+            </form>
+            <div id="login-status"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Save the Environment Initiative</p>
+  </footer>
+<!-- Firebase SDKs and custom script at end of body -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-analytics-compat.js"></script>
+<script>
+  // Initialize Firebase
+  var firebaseConfig = {
+    apiKey: "AIzaSyCeTfoIIWlPkn68sZe-0m8oHUgxLgIiyRA",
+    authDomain: "save-the-environment-49649.firebaseapp.com",
+    projectId: "save-the-environment-49649",
+    storageBucket: "save-the-environment-49649.firebasestorage.app",
+    messagingSenderId: "724730117051",
+    appId: "1:724730117051:web:4bec6010aedccec0a5e29e",
+    measurementId: "G-S4ZSM54DY1"
+  };
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  var auth = firebase.auth();
+  var analytics = firebase.analytics();
+
+  function attachLoginHandler() {
+    console.log('Auth script loaded, auth object:', auth);
+    var btn = document.getElementById('login-btn');
+    if (!btn) {
+      console.error('Login button not found');
+      return;
+    }
+    btn.style.cursor = 'pointer';
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      var email = document.getElementById('email').value;
+      var password = document.getElementById('password').value;
+      console.log('Attempting login for', email);
+      try {
+        auth.signInWithEmailAndPassword(email, password)
+          .then(function(userCredential) {
+            console.log('Login success', userCredential);
+            document.getElementById('login-status').innerText = 'Login successful! Redirecting...';
+            window.location.href = 'admin.html';
+          })
+          .catch(function(error) {
+            console.error('Login error:', error);
+            document.getElementById('login-status').innerText = 'Login failed: ' + error.message;
+          });
+      } catch (err) {
+        console.error('Unexpected error calling signInWithEmailAndPassword', err);
+        document.getElementById('login-status').innerText = 'Unexpected error: ' + err.message;
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachLoginHandler);
+  } else {
+    attachLoginHandler();
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Articles & Research - Save the Environment</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Articles & Research</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="projects.html">Projects</a>
+            <a href="articles.html">Articles</a>
+            <a href="get-involved.html">Get Involved</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Latest Articles</h2>
+            <div id="articles-list">
+                <p>Loading articles...</p>
+            </div>
+        </section>
+        <section>
+            <h2>Research</h2>
+            <label>Filter by Topic:
+                <select id="topic-filter">
+                    <option value="All">All</option>
+                    <option value="Water">Water</option>
+                    <option value="Waste">Waste</option>
+                    <option value="Climate">Climate</option>
+                    <option value="Living Conditions">Living Conditions</option>
+                </select>
+            </label>
+            <div id="research-list">
+                <p>Loading research...</p>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Save the Environment Initiative</p>
+    </footer>
+</body>
+<script>
+    // Firebase config from your project
+    var firebaseConfig = {
+        apiKey: "AIzaSyCeTfoIIWlPkn68sZe-0m8oHUgxLgIiyRA",
+        authDomain: "save-the-environment-49649.firebaseapp.com",
+        projectId: "save-the-environment-49649",
+        storageBucket: "save-the-environment-49649.firebasestorage.app",
+        messagingSenderId: "724730117051",
+        appId: "1:724730117051:web:4bec6010aedccec0a5e29e",
+        measurementId: "G-S4ZSM54DY1"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    var db = firebase.firestore();
+
+        // Fetch and display articles with error logging
+        db.collection("articles").orderBy("created", "desc").get()
+            .then((querySnapshot) => {
+                const articlesDiv = document.getElementById("articles-list");
+                if (querySnapshot.empty) {
+                    articlesDiv.innerHTML = '<p>No articles yet.</p>';
+                    return;
+                }
+                let html = '<ul>';
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    html += `<li><a href="article.html?id=${doc.id}" style="font-weight:bold;color:#388e3c;text-decoration:underline;">${data.title}</a><br>${data.content.substring(0, 120)}${data.content.length > 120 ? '...' : ''}</li>`;
+                });
+                html += '</ul>';
+                articlesDiv.innerHTML = html;
+            })
+            .catch((error) => {
+                const articlesDiv = document.getElementById("articles-list");
+                articlesDiv.innerHTML = `<p style='color:red;'>Error loading articles: ${error.message}</p>`;
+                console.error("Error fetching articles:", error);
+            });
+
+    // Fetch and display research
+    let allResearchDocs = [];
+    function renderResearchList(docs) {
+        const researchDiv = document.getElementById("research-list");
+        if (!docs.length) {
+            researchDiv.innerHTML = '<p>No research found for this topic.</p>';
+            return;
+        }
+        let html = '<ul>';
+        docs.forEach((doc) => {
+            const data = doc.data();
+            html += `<li><a href="research.html?id=${doc.id}" style="font-weight:bold;color:#388e3c;text-decoration:underline;">${data.title}</a>`;
+            if (data.pdfUrl) {
+                html += ` - <a href="${data.pdfUrl}" target="_blank">Download PDF</a>`;
+            }
+            html += `</li>`;
+        });
+        html += '</ul>';
+        researchDiv.innerHTML = html;
+    }
+    db.collection("research").orderBy("created", "desc").get().then((querySnapshot) => {
+        allResearchDocs = querySnapshot.docs;
+        renderResearchList(allResearchDocs);
+    });
+    document.getElementById('topic-filter').addEventListener('change', function() {
+        const topic = this.value;
+        if (topic === 'All') {
+            renderResearchList(allResearchDocs);
+        } else {
+            renderResearchList(allResearchDocs.filter(doc => (doc.data().topic === topic)));
+        }
+    });
+</script>
+</body>
+</html>

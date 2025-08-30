@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Involved - Save the Environment</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <header>
+        <h1>Get Involved</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="projects.html">Projects</a>
+            <a href="articles.html">Articles</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="calendar.html">Calendar</a>
+            <a href="newsletter.html">Newsletter</a>
+            <a href="admin.html" id="admin-link" style="display:none;">Admin</a>
+            <a href="get-involved.html">Get Involved</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+        <!-- Social Media Links -->
+        <div>
+            <!--#include file="assets/social.html" -->
+        </div>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Volunteer Sign-Up</h2>
+            <form id="volunteer-form">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <button type="submit">Sign Up</button>
+            </form>
+            <div id="volunteer-status" style="margin-top:1rem;color:#388e3c;font-weight:bold;"></div>
+        </section>
+        <section>
+            <h2>Donate</h2>
+            <p>Support our initiatives by making a donation. Every contribution counts!</p>
+            <button>Donate Now</button>
+        </section>
+        <section>
+            <h2>Partnership Opportunities</h2>
+            <p>Partner with us to amplify our impact. Contact us for collaboration.</p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Save the Environment Initiative</p>
+    </footer>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyCeTfoIIWlPkn68sZe-0m8oHUgxLgIiyRA",
+        authDomain: "save-the-environment-49649.firebaseapp.com",
+        projectId: "save-the-environment-49649",
+        storageBucket: "save-the-environment-49649.firebasestorage.app",
+        messagingSenderId: "724730117051",
+        appId: "1:724730117051:web:4bec6010aedccec0a5e29e",
+        measurementId: "G-S4ZSM54DY1"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    var auth = firebase.auth();
+    document.addEventListener('DOMContentLoaded', function() {
+    var db = firebase.firestore();
+    var volunteerForm = document.getElementById('volunteer-form');
+    var volunteerStatus = document.getElementById('volunteer-status');
+    if (volunteerForm) {
+        volunteerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var name = document.getElementById('name').value;
+            var email = document.getElementById('email').value;
+            volunteerStatus.style.color = '#388e3c';
+            volunteerStatus.innerText = 'Submitting...';
+            db.collection('volunteers').add({
+                name: name,
+                email: email,
+                created: new Date()
+            }).then(function() {
+                volunteerStatus.style.color = '#388e3c';
+                volunteerStatus.innerText = 'Thank you for signing up as a volunteer!';
+                volunteerForm.reset();
+            }).catch(function(err) {
+                volunteerStatus.style.color = '#b00';
+                volunteerStatus.innerText = 'Error submitting: ' + err.message;
+                console.error('Error saving volunteer:', err);
+            });
+        });
+    }
+            auth.onAuthStateChanged(function(user) {
+                var adminLink = document.getElementById('admin-link');
+                if (user) {
+                    adminLink.style.display = 'inline';
+                } else {
+                    adminLink.style.display = 'none';
+                    console.log('You are not signed in. You cannot access the admin page.');
+                }
+            });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Save the Environment</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <header>
+        <h1>Admin Panel</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="projects.html">Projects</a>
+            <a href="articles.html">Articles</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="calendar.html">Calendar</a>
+            <a href="newsletter.html">Newsletter</a>
+            <a href="admin.html">Admin</a>
+            <a href="get-involved.html">Get Involved</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Post a New Article</h2>
+            <form id="article-form">
+                <label for="article-title">Title:</label>
+                <input type="text" id="article-title" required>
+                <label for="article-content">Content:</label>
+                <textarea id="article-content" required></textarea>
+                <button type="submit">Post Article</button>
+            </form>
+            <div id="article-status"></div>
+        </section>
+        <section>
+            <form id="research-form">
+                <h2>Submit New Research</h2>
+                <label>Title of Research:<br><input type="text" name="title" required></label><br>
+                <label>Research Question / Objective:<br><textarea name="question" required></textarea></label><br>
+                <label>Background / Rationale:<br><textarea name="background" required></textarea></label><br>
+                <label>Location / Scope:<br><input type="text" name="location" required></label><br>
+                <label>Methodology:<br><textarea name="methodology" required></textarea></label><br>
+                <label>Sample Size & Population:<br><input type="text" name="sample" required></label><br>
+                <label>Topic:<br>
+                    <select name="topic" required>
+                        <option value="Water">Water</option>
+                        <option value="Waste">Waste</option>
+                        <option value="Climate">Climate</option>
+                        <option value="Living Conditions">Living Conditions</option>
+                    </select>
+                </label><br>
+                <h3>Data Collection Table</h3>
+                <table id="data-table" border="1">
+                    <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th>Description</th>
+                            <th>Unit</th>
+                            <th>Method</th>
+                            <th>Example</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+                <button type="button" onclick="addDataRow()">Add Row</button><br><br>
+                <label>Findings / Results:<br><textarea name="findings" required></textarea></label><br>
+                <label>Discussion:<br><textarea name="discussion" required></textarea></label><br>
+                <label>Recommendations:<br><textarea name="recommendations" required></textarea></label><br>
+                <label>Conclusion:<br><textarea name="conclusion" required></textarea></label><br>
+                <button type="submit">Submit Research</button>
+            </form>
+            <div id="research-status"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Save the Environment Initiative</p>
+    </footer>
+</body>
+<!-- Firebase SDKs and custom script at end of body -->
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script>
+    // Firebase config
+    var firebaseConfig = {
+        apiKey: "AIzaSyCeTfoIIWlPkn68sZe-0m8oHUgxLgIiyRA",
+        authDomain: "save-the-environment-49649.firebaseapp.com",
+        projectId: "save-the-environment-49649",
+        storageBucket: "save-the-environment-49649.firebasestorage.app",
+        messagingSenderId: "724730117051",
+        appId: "1:724730117051:web:4bec6010aedccec0a5e29e",
+        measurementId: "G-S4ZSM54DY1"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    var auth = firebase.auth();
+    var db = firebase.firestore();
+
+    // Restrict access: redirect if not signed in
+    document.addEventListener('DOMContentLoaded', function() {
+        auth.onAuthStateChanged(function(user) {
+            if (!user) {
+                console.log('You are not signed in. You cannot access the admin page. Redirecting to login.');
+                window.location.href = 'auth.html';
+            }
+        });
+
+        // Article form
+        document.getElementById('article-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('article-title').value;
+            const content = document.getElementById('article-content').value;
+            if (!db) {
+                document.getElementById('article-status').innerText = 'Firestore not initialized.';
+                console.error('Firestore not initialized.');
+                return;
+            }
+            db.collection('articles').add({
+                title,
+                content,
+                created: new Date()
+            }).then(() => {
+                document.getElementById('article-status').innerText = 'Article posted!';
+                document.getElementById('article-form').reset();
+            }).catch((err) => {
+                document.getElementById('article-status').innerText = 'Error posting article: ' + err.message;
+                console.error('Error posting article:', err);
+            });
+        });
+
+        // Research form
+        document.getElementById('research-form').onsubmit = function(e) {
+            e.preventDefault();
+            var form = e.target;
+            var dataRows = Array.from(document.querySelectorAll('#data-table tbody tr')).map(function(row) {
+                return {
+                    variable: row.querySelector('.var').value,
+                    description: row.querySelector('.desc').value,
+                    unit: row.querySelector('.unit').value,
+                    method: row.querySelector('.method').value,
+                    example: row.querySelector('.example').value
+                };
+            });
+            var research = {
+                title: form.title.value,
+                question: form.question.value,
+                background: form.background.value,
+                location: form.location.value,
+                methodology: form.methodology.value,
+                sample: form.sample.value,
+                topic: form.topic.value,
+                dataTable: dataRows,
+                findings: form.findings.value,
+                discussion: form.discussion.value,
+                recommendations: form.recommendations.value,
+                conclusion: form.conclusion.value,
+                created: new Date()
+            };
+            db.collection('research').add(research).then(function() {
+                alert('Research submitted!');
+                form.reset();
+                document.querySelector('#data-table tbody').innerHTML = '';
+            }).catch(function(err) {
+                alert('Error: ' + err.message);
+            });
+        };
+    });
+
+    function addDataRow() {
+        var tbody = document.querySelector('#data-table tbody');
+        var row = document.createElement('tr');
+        row.innerHTML = `
+            <td><input type="text" class="var" required></td>
+            <td><input type="text" class="desc" required></td>
+            <td><input type="text" class="unit" required></td>
+            <td><input type="text" class="method" required></td>
+            <td><input type="text" class="example" required></td>
+            <td><button type="button" onclick="this.closest('tr').remove()">Remove</button></td>
+        `;
+        tbody.appendChild(row);
+    }
+</script>
+</html>

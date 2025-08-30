@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Save the Environment</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <header>
+        <h1>Sign Up</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="auth.html">Sign In</a>
+        </nav>
+    </header>
+    <main>
+        <section>
+      <form id="signup-form">
+        <label for="email">Email:</label>
+        <input type="email" id="email" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" required>
+        <button type="button" id="signup-btn">Sign Up</button>
+      </form>
+            <div id="signup-status"></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Save the Environment Initiative</p>
+    </footer>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyCeTfoIIWlPkn68sZe-0m8oHUgxLgIiyRA",
+        authDomain: "save-the-environment-49649.firebaseapp.com",
+        projectId: "save-the-environment-49649",
+        storageBucket: "save-the-environment-49649.firebasestorage.app",
+        messagingSenderId: "724730117051",
+        appId: "1:724730117051:web:4bec6010aedccec0a5e29e",
+        measurementId: "G-S4ZSM54DY1"
+      };
+      if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      if (typeof firebase !== 'undefined' && firebase.auth) {
+        const auth = firebase.auth();
+        document.getElementById('signup-btn').addEventListener('click', function() {
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+          auth.createUserWithEmailAndPassword(email, password)
+            .then(function(userCredential) {
+              document.getElementById('signup-status').innerText = 'Sign up successful! Redirecting...';
+              window.location.href = 'index.html';
+            })
+            .catch(function(error) {
+              document.getElementById('signup-status').innerText = 'Sign up failed: ' + error.message;
+              console.error('Signup error:', error);
+            });
+        });
+      } else {
+        document.getElementById('signup-status').innerText = 'Firebase not loaded.';
+      }
+    </script>
+</body>
+</html>

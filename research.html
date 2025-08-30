@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Details - Save the Environment</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Research Details</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="articles.html">Articles & Research</a>
+        </nav>
+    </header>
+    <main>
+        <section id="research-details">
+            <p>Loading research...</p>
+        </section>
+        <section>
+            <canvas id="sampleChart" width="700" height="350" style="display:none;margin-top:20px;"></canvas>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Save the Environment Initiative</p>
+    </footer>
+<script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyCeTfoIIWlPkn68sZe-0m8oHUgxLgIiyRA",
+        authDomain: "save-the-environment-49649.firebaseapp.com",
+        projectId: "save-the-environment-49649",
+        storageBucket: "save-the-environment-49649.firebasestorage.app",
+        messagingSenderId: "724730117051",
+        appId: "1:724730117051:web:4bec6010aedccec0a5e29e",
+        measurementId: "G-S4ZSM54DY1"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    var db = firebase.firestore();
+    function getQueryParam(name) {
+        const url = new URL(window.location.href);
+        return url.searchParams.get(name);
+    }
+    const id = getQueryParam('id');
+    if (!id) {
+        document.getElementById('research-details').innerHTML = '<p style="color:red;">No research ID provided.</p>';
+    } else {
+        db.collection('research').doc(id).get().then(function(doc) {
+            if (!doc.exists) {
+                document.getElementById('research-details').innerHTML = '<p style="color:red;">Research not found.</p>';
+                return;
+            }
+            renderResearch(doc.data());
+        }).catch(function(err) {
+            document.getElementById('research-details').innerHTML = `<p style='color:red;'>Error loading research: ${err.message}</p>`;
+        });
+    }
+    function renderResearch(data) {
+        let html = `<h2>${data.title}</h2>`;
+        html += `<strong>Research Question / Objective:</strong> <div>${data.question || ''}</div><br>`;
+        html += `<strong>Background / Rationale:</strong> <div>${data.background || ''}</div><br>`;
+        html += `<strong>Location / Scope:</strong> <div>${data.location || ''}</div><br>`;
+        html += `<strong>Methodology:</strong> <div>${data.methodology || ''}</div><br>`;
+        html += `<strong>Sample Size & Population:</strong> <div>${data.sample || ''}</div><br>`;
+        if (Array.isArray(data.dataTable) && data.dataTable.length) {
+            html += `<h3>Data Collection Table</h3><table border="1"><thead><tr><th>Variable</th><th>Description</th><th>Unit</th><th>Method</th><th>Example</th></tr></thead><tbody>`;
+            data.dataTable.forEach(row => {
+                html += `<tr><td>${row.variable}</td><td>${row.description}</td><td>${row.unit}</td><td>${row.method}</td><td>${row.example}</td></tr>`;
+            });
+            html += `</tbody></table><br>`;
+            drawSampleChart(data.dataTable);
+        }
+        html += `<strong>Findings / Results:</strong> <div>${data.findings || ''}</div><br>`;
+        html += `<strong>Discussion:</strong> <div>${data.discussion || ''}</div><br>`;
+        html += `<strong>Recommendations:</strong> <div>${data.recommendations || ''}</div><br>`;
+        html += `<strong>Conclusion:</strong> <div>${data.conclusion || ''}</div><br>`;
+        if (data.pdfUrl) {
+            html += `<a href="${data.pdfUrl}" target="_blank" style="font-weight:bold;color:#388e3c;">Download Full Report (PDF)</a><br>`;
+        }
+        html += `<button id="edit-btn">Edit</button>`;
+        document.getElementById('research-details').innerHTML = html;
+        document.getElementById('edit-btn').onclick = function() {
+            showEditForm(data);
+        };
+    }
+    function showEditForm(data) {
+        document.getElementById('research-details').style.display = 'none';
+        document.body.insertAdjacentHTML('beforeend', `<section id="edit-section" style="max-width:700px;margin:auto;background:#fafafa;padding:2em;border-radius:12px;position:relative;z-index:10;">
+        <h2>Edit Research</h2>
+        <form id="edit-form">
+            <label>Title:<br><input type="text" name="title" value="${data.title}" required></label><br>
+            <label>Question:<br><input type="text" name="question" value="${data.question || ''}" required></label><br>
+            <label>Background:<br><input type="text" name="background" value="${data.background || ''}" required></label><br>
+            <label>Location:<br><input type="text" name="location" value="${data.location || ''}" required></label><br>
+            <label>Methodology:<br><input type="text" name="methodology" value="${data.methodology || ''}" required></label><br>
+            <label>Sample Size & Population:<br><input type="text" name="sample" value="${data.sample || ''}" required></label><br>
+            <label>Topic:<br><input type="text" name="topic" value="${data.topic || ''}" required></label><br>
+            <label>Findings:<br><input type="text" name="findings" value="${data.findings || ''}" required></label><br>
+            <label>Discussion:<br><input type="text" name="discussion" value="${data.discussion || ''}" required></label><br>
+            <label>Recommendations:<br><input type="text" name="recommendations" value="${data.recommendations || ''}" required></label><br>
+            <label>Conclusion:<br><input type="text" name="conclusion" value="${data.conclusion || ''}" required></label><br>
+            <label>Data Table (JSON):<br><textarea name="dataTable" required>${JSON.stringify(data.dataTable || [])}</textarea></label><br>
+            <button type="submit">Save Changes</button>
+        </form>
+        <div id="edit-status" style="margin-top:1em;"></div>
+    </section>`);
+        document.getElementById('edit-form').onsubmit = function(e) {
+            e.preventDefault();
+            var form = e.target;
+            let parsedDataTable = [];
+            try { parsedDataTable = JSON.parse(form.dataTable.value); } catch(e) {}
+            var updated = {
+                title: form.title.value,
+                question: form.question.value,
+                background: form.background.value,
+                location: form.location.value,
+                methodology: form.methodology.value,
+                sample: form.sample.value,
+                topic: form.topic.value,
+                findings: form.findings.value,
+                discussion: form.discussion.value,
+                recommendations: form.recommendations.value,
+                conclusion: form.conclusion.value,
+                dataTable: parsedDataTable
+            };
+            db.collection('research').doc(id).update(updated).then(function() {
+                document.getElementById('edit-status').innerText = 'Research updated!';
+                document.getElementById('edit-section').remove();
+                document.getElementById('research-details').style.display = 'block';
+                loadResearch();
+            }).catch(function(err) {
+                document.getElementById('edit-status').innerText = 'Error: ' + err.message;
+            });
+        };
+    }
+    function loadResearch() {
+        db.collection('research').doc(id).get().then(function(doc) {
+            if (!doc.exists) {
+                document.getElementById('research-details').innerHTML = '<p style="color:red;">Research not found.</p>';
+                return;
+            }
+            renderResearch(doc.data());
+        }).catch(function(err) {
+            document.getElementById('research-details').innerHTML = `<p style='color:red;'>Error loading research: ${err.message}</p>`;
+        });
+    }
+    function drawSampleChart(samples) {
+        if (!samples.length) return;
+        const canvas = document.getElementById('sampleChart');
+        canvas.style.display = 'block';
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const labels = samples.map(s => s.variable);
+        const values = samples.map(s => parseFloat(s.example) || 0);
+        const barWidth = 40;
+        const gap = 60;
+        const maxVal = Math.max(...values, 1);
+        // Draw Y axis
+        ctx.strokeStyle = '#222';
+        ctx.beginPath();
+        ctx.moveTo(50, 30);
+        ctx.lineTo(50, canvas.height - 50);
+        ctx.lineTo(canvas.width - 30, canvas.height - 50);
+        ctx.stroke();
+        // Draw bars
+        ctx.font = '16px Arial';
+        values.forEach((val, i) => {
+            const x = 60 + i * (barWidth + gap);
+            const y = canvas.height - 50;
+            ctx.fillStyle = '#388e3c';
+            ctx.fillRect(x, y, barWidth, -(val / maxVal) * 200);
+            // Value label above bar
+            ctx.fillStyle = '#222';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText(val, x + barWidth / 2 - 10, y - (val / maxVal) * 200 - 10);
+            // Variable label rotated below bar
+            ctx.save();
+            ctx.translate(x + barWidth / 2, y + 20);
+            ctx.rotate(-Math.PI / 4);
+            ctx.font = '14px Arial';
+            ctx.fillText(labels[i], 0, 0);
+            ctx.restore();
+        });
+        // Y axis label
+        ctx.save();
+        ctx.translate(20, canvas.height / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.font = 'bold 16px Arial';
+        ctx.fillText('Sample Value', 0, 0);
+        ctx.restore();
+    }
+</script>
+</body>
+</html>

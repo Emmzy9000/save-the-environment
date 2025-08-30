@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Save the Environment</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Save the Environment</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="projects.html">Projects</a>
+            <a href="articles.html">Articles</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="calendar.html">Calendar</a>
+            <a href="newsletter.html">Newsletter</a>
+            <a href="admin.html" id="admin-link" style="display:none;">Admin</a>
+            <a href="dashboard.html" id="dashboard-link" style="display:none;">Dashboard</a>
+            <a href="get-involved.html">Get Involved</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+        <!-- Social Media Links -->
+        <div>
+            <!--#include file="assets/social.html" -->
+        </div>
+        </nav>
+    </header>
+    <main>
+        <section class="hero">
+            <h2>Small Acts, Big Change</h2>
+            <p>Protecting nature and promoting sustainable living in our community.</p>
+            <div class="hero-images" style="display:flex;gap:2rem;justify-content:center;align-items:center;margin-top:1.5rem;">
+                <div style="text-align:center;">
+                    <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=600&q=80" alt="Human planting a tree" style="max-width:340px;border-radius:12px;box-shadow:0 2px 12px #aaa;">
+                    <div style="margin-top:0.5rem;font-size:1.05em;color:#2d6a4f;">Planting a tree</div>
+                </div>
+                <div style="text-align:center;">
+                    <img src="https://images.unsplash.com/photo-1528323273322-d81458248d40?auto=format&fit=crop&w=600&q=80" alt="Human putting rubbish in a bin" style="max-width:340px;border-radius:12px;box-shadow:0 2px 12px #aaa;">
+                    <div style="margin-top:0.5rem;font-size:1.05em;color:#2d6a4f;">Cleaning up rubbish</div>
+                </div>
+            </div>
+        </section>
+        <section>
+            <button id="signout-btn" style="float:right; margin:1rem 0;">Sign Out</button>
+            <a href="auth.html" style="float:right; margin:1rem 1rem 0 0;">Sign In</a>
+        </section>
+        <section class="impact-stories">
+            <h3>Impact Stories</h3>
+            <p>Read how small actions have made a big difference.</p>
+        </section>
+        <section class="upcoming-events">
+            <h3>Upcoming Events</h3>
+            <ul>
+                <li>Tree Planting Drive - Sept 15</li>
+                <li>Community Clean-Up - Oct 10</li>
+            </ul>
+        </section>
+        <section class="participate">
+            <h3>Ways to Participate</h3>
+            <p>Join us in making a positive impact!</p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Save the Environment Initiative</p>
+    </footer>
+
+<script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyCeTfoIIWlPkn68sZe-0m8oHUgxLgIiyRA",
+        authDomain: "save-the-environment-49649.firebaseapp.com",
+        projectId: "save-the-environment-49649",
+        storageBucket: "save-the-environment-49649.firebasestorage.app",
+        messagingSenderId: "724730117051",
+        appId: "1:724730117051:web:4bec6010aedccec0a5e29e",
+        measurementId: "G-S4ZSM54DY1"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    var auth = firebase.auth();
+    document.addEventListener('DOMContentLoaded', function() {
+                auth.onAuthStateChanged(function(user) {
+                    var adminLink = document.getElementById('admin-link');
+                    var dashboardLink = document.getElementById('dashboard-link');
+                    if (user) {
+                        adminLink.style.display = 'inline';
+                        dashboardLink.style.display = 'inline';
+                    } else {
+                        adminLink.style.display = 'none';
+                        dashboardLink.style.display = 'none';
+                        setTimeout(function() {
+                            console.log('You are not signed in. You cannot access the admin page.');
+                        }, 100);
+                    }
+                });
+        var signoutBtn = document.getElementById('signout-btn');
+        if (signoutBtn) {
+            signoutBtn.onclick = function() {
+                auth.signOut().then(() => {
+                    window.location.href = 'auth.html';
+                });
+            };
+        }
+    });
+</script>
+</html>

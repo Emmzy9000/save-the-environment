@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Event - Save the Environment</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Add New Event</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="projects.html">Projects</a>
+        </nav>
+    </header>
+    <main>
+        <form id="event-form" style="max-width:500px;margin:auto;">
+            <label>Event Title:<br><input type="text" name="title" required></label><br>
+            <label>Date:<br><input type="date" name="date" required></label><br>
+            <label>Description:<br><textarea name="description" required></textarea></label><br>
+            <button type="submit">Add Event</button>
+        </form>
+        <div id="event-status" style="text-align:center;margin-top:1em;"></div>
+    </main>
+    <footer>
+        <p>&copy; 2025 Save the Environment Initiative</p>
+    </footer>
+<script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyCeTfoIIWlPkn68sZe-0m8oHUgxLgIiyRA",
+        authDomain: "save-the-environment-49649.firebaseapp.com",
+        projectId: "save-the-environment-49649",
+        storageBucket: "save-the-environment-49649.firebasestorage.app",
+        messagingSenderId: "724730117051",
+        appId: "1:724730117051:web:4bec6010aedccec0a5e29e",
+        measurementId: "G-S4ZSM54DY1"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    var db = firebase.firestore();
+    document.getElementById('event-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var form = e.target;
+        var event = {
+            title: form.title.value,
+            date: form.date.value,
+            description: form.description.value,
+            created: new Date()
+        };
+        db.collection('events').add(event).then(function() {
+            document.getElementById('event-status').innerText = 'Event added!';
+            form.reset();
+        }).catch(function(err) {
+            document.getElementById('event-status').innerText = 'Error: ' + err.message;
+        });
+    });
+</script>
+</body>
+</html>

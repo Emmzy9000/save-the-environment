@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Save the Environment</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <header>
+        <h1>Contact Us</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="projects.html">Projects</a>
+            <a href="articles.html">Articles</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="calendar.html">Calendar</a>
+            <a href="newsletter.html">Newsletter</a>
+            <a href="admin.html" id="admin-link" style="display:none;">Admin</a>
+            <a href="get-involved.html">Get Involved</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+        <!-- Social Media Links -->
+        <div>
+            <!--#include file="assets/social.html" -->
+        </div>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Contact Form</h2>
+            <form id="contact-form">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" required></textarea>
+                <button type="submit">Send</button>
+            </form>
+            <div id="contact-status" style="margin-top:1rem;color:#388e3c;font-weight:bold;"></div>
+        </section>
+        <section>
+            <h2>Other Ways to Reach Us</h2>
+            <p>Email: <a href="mailto:emmanuelbwanga108@gmail.com">emmanuelbwanga108@gmail.com</a></p>
+            <p>Phone: <a href="tel:0967759324">0967759324</a></p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Save the Environment Initiative</p>
+    </footer>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyCeTfoIIWlPkn68sZe-0m8oHUgxLgIiyRA",
+        authDomain: "save-the-environment-49649.firebaseapp.com",
+        projectId: "save-the-environment-49649",
+        storageBucket: "save-the-environment-49649.firebasestorage.app",
+        messagingSenderId: "724730117051",
+        appId: "1:724730117051:web:4bec6010aedccec0a5e29e",
+        measurementId: "G-S4ZSM54DY1"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    var auth = firebase.auth();
+    document.addEventListener('DOMContentLoaded', function() {
+    var db = firebase.firestore();
+    var contactForm = document.getElementById('contact-form');
+    var contactStatus = document.getElementById('contact-status');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            var name = document.getElementById('name').value;
+            var email = document.getElementById('email').value;
+            var message = document.getElementById('message').value;
+            contactStatus.style.color = '#388e3c';
+            contactStatus.innerText = 'Sending...';
+            db.collection('contacts').add({
+                name: name,
+                email: email,
+                message: message,
+                created: new Date()
+            }).then(function() {
+                contactStatus.style.color = '#388e3c';
+                contactStatus.innerText = 'Thank you! Your message has been sent.';
+                contactForm.reset();
+            }).catch(function(err) {
+                contactStatus.style.color = '#b00';
+                contactStatus.innerText = 'Error sending message: ' + err.message;
+                console.error('Error saving contact:', err);
+            });
+        });
+    }
+            auth.onAuthStateChanged(function(user) {
+                var adminLink = document.getElementById('admin-link');
+                if (user) {
+                    adminLink.style.display = 'inline';
+                } else {
+                    adminLink.style.display = 'none';
+                    console.log('You are not signed in. You cannot access the admin page.');
+                }
+            });
+    });
+</script>
+</body>
+</html>

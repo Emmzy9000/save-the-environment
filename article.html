@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Read Article - Save the Environment</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Read Article</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="articles.html">Articles</a>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <div id="article-content">
+                <p>Loading article...</p>
+            </div>
+        </section>
+        <section id="edit-section" style="display:none;max-width:600px;margin:auto;"></section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Save the Environment Initiative</p>
+    </footer>
+<script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyCeTfoIIWlPkn68sZe-0m8oHUgxLgIiyRA",
+        authDomain: "save-the-environment-49649.firebaseapp.com",
+        projectId: "save-the-environment-49649",
+        storageBucket: "save-the-environment-49649.firebasestorage.app",
+        messagingSenderId: "724730117051",
+        appId: "1:724730117051:web:4bec6010aedccec0a5e29e",
+        measurementId: "G-S4ZSM54DY1"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    var db = firebase.firestore();
+    function getQueryParam(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }
+    const articleId = getQueryParam('id');
+    function renderArticle(data) {
+        document.getElementById('article-content').innerHTML = `<h2>${data.title}</h2><p>${data.content}</p><button id="edit-btn">Edit</button>`;
+        document.getElementById('edit-btn').onclick = function() {
+            showEditForm(data);
+        };
+    }
+    function showEditForm(data) {
+        document.getElementById('edit-section').style.display = 'block';
+        document.getElementById('edit-section').innerHTML = `
+            <h2>Edit Article</h2>
+            <form id="edit-form">
+                <label>Title:<br><input type="text" name="title" value="${data.title}" required></label><br>
+                <label>Content:<br><textarea name="content" required>${data.content}</textarea></label><br>
+                <button type="submit">Save Changes</button>
+            </form>
+            <div id="edit-status" style="margin-top:1em;"></div>
+        `;
+        document.getElementById('edit-form').onsubmit = function(e) {
+            e.preventDefault();
+            var form = e.target;
+            var updated = {
+                title: form.title.value,
+                content: form.content.value
+            };
+            db.collection('articles').doc(articleId).update(updated).then(function() {
+                document.getElementById('edit-status').innerText = 'Article updated!';
+                document.getElementById('edit-section').style.display = 'none';
+                loadArticle();
+            }).catch(function(err) {
+                document.getElementById('edit-status').innerText = 'Error: ' + err.message;
+            });
+        };
+    }
+    function loadArticle() {
+        if (!articleId) {
+            document.getElementById('article-content').innerHTML = '<p style="color:red;">No article selected.</p>';
+            return;
+        }
+        db.collection('articles').doc(articleId).get().then((doc) => {
+            if (!doc.exists) {
+                document.getElementById('article-content').innerHTML = '<p style="color:red;">Article not found.</p>';
+                return;
+            }
+            renderArticle(doc.data());
+        }).catch((err) => {
+            document.getElementById('article-content').innerHTML = `<p style='color:red;'>Error loading article: ${err.message}</p>`;
+        });
+    }
+    loadArticle();
+</script>
+</body>
+</html>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Save the Environment</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Admin Dashboard</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="admin.html">Admin Panel</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="articles.html">Articles</a>
+            <a href="get-involved.html">Get Involved</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Contact Messages</h2>
+            <div id="contacts-count" style="font-weight:bold;"></div>
+            <div id="contacts-list"><p>Loading messages...</p></div>
+        </section>
+        <section>
+            <h2>Volunteer Sign-Ups</h2>
+            <div id="volunteers-count" style="font-weight:bold;"></div>
+            <div id="volunteers-list"><p>Loading volunteers...</p></div>
+        </section>
+        <section>
+            <h2>Articles & Research</h2>
+            <div id="articles-count" style="font-weight:bold;"></div>
+            <div id="research-count" style="font-weight:bold;"></div>
+            <div id="admin-articles-list"><p>Loading articles...</p></div>
+            <div id="admin-research-list"><p>Loading research...</p></div>
+        </section>
+        <section>
+            <h2>Projects</h2>
+            <button onclick="window.location.href='add-project.html'" style="margin-bottom:1em;">Add Project</button>
+            <div id="projects-list"><p>Loading projects...</p></div>
+        </section>
+        <section>
+            <h2>Events</h2>
+            <button onclick="window.location.href='add-event.html'" style="margin-bottom:1em;">Add Event</button>
+            <div id="events-list"><p>Loading events...</p></div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Save the Environment Initiative</p>
+    </footer>
+<script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyCeTfoIIWlPkn68sZe-0m8oHUgxLgIiyRA",
+        authDomain: "save-the-environment-49649.firebaseapp.com",
+        projectId: "save-the-environment-49649",
+        storageBucket: "save-the-environment-49649.firebasestorage.app",
+        messagingSenderId: "724730117051",
+        appId: "1:724730117051:web:4bec6010aedccec0a5e29e",
+        measurementId: "G-S4ZSM54DY1"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    var auth = firebase.auth();
+    var db = firebase.firestore();
+
+    // Restrict access: redirect if not signed in
+    document.addEventListener('DOMContentLoaded', function() {
+        auth.onAuthStateChanged(function(user) {
+            if (!user) {
+                console.log('You are not signed in. Redirecting to login.');
+                window.location.href = 'auth.html';
+            } else {
+                // Show user info
+                var header = document.querySelector('header');
+                var userDiv = document.createElement('div');
+                userDiv.style.margin = '10px 0';
+                userDiv.innerHTML = `<span style='color:green;'>Signed in as: ${user.displayName || user.email}</span>`;
+                header.appendChild(userDiv);
+                loadContacts();
+                loadVolunteers();
+                loadArticles();
+                loadResearch();
+                loadProjects();
+                loadEvents();
+            }
+        });
+    });
+
+    // Load contact messages
+    function loadContacts() {
+        db.collection('contacts').orderBy('created', 'desc').get().then(function(querySnapshot) {
+            var contactsDiv = document.getElementById('contacts-list');
+            var contactsCountDiv = document.getElementById('contacts-count');
+            if (querySnapshot.empty) {
+                contactsDiv.innerHTML = '<p>No messages yet.</p>';
+                contactsCountDiv.textContent = 'Total: 0';
+                return;
+            }
+            contactsCountDiv.textContent = `Total: ${querySnapshot.size}`;
+            var html = '<ul>';
+            querySnapshot.forEach(function(doc) {
+                var data = doc.data();
+                html += `<li><strong>${data.name}</strong> (${data.email})<br>${data.message}</li>`;
+            });
+            html += '</ul>';
+            contactsDiv.innerHTML = html;
+        }).catch(function(err) {
+            contactsDiv.innerHTML = `<p style='color:red;'>Error loading messages: ${err.message}</p>`;
+        });
+    }
+
+    // Load volunteers
+    function loadVolunteers() {
+        db.collection('volunteers').orderBy('created', 'desc').get().then(function(querySnapshot) {
+            var volunteersDiv = document.getElementById('volunteers-list');
+            var volunteersCountDiv = document.getElementById('volunteers-count');
+            if (querySnapshot.empty) {
+                volunteersDiv.innerHTML = '<p>No volunteers yet.</p>';
+                volunteersCountDiv.textContent = 'Total: 0';
+                return;
+            }
+            volunteersCountDiv.textContent = `Total: ${querySnapshot.size}`;
+            var html = '<ul>';
+            querySnapshot.forEach(function(doc) {
+                var data = doc.data();
+                html += `<li><strong>${data.name}</strong> (${data.email})</li>`;
+            });
+            html += '</ul>';
+            volunteersDiv.innerHTML = html;
+        }).catch(function(err) {
+            volunteersDiv.innerHTML = `<p style='color:red;'>Error loading volunteers: ${err.message}</p>`;
+        });
+    }
+
+    // Load articles
+    function loadArticles() {
+        db.collection('articles').orderBy('created', 'desc').get().then(function(querySnapshot) {
+            var articlesDiv = document.getElementById('admin-articles-list');
+            var articlesCountDiv = document.getElementById('articles-count');
+            if (querySnapshot.empty) {
+                articlesDiv.innerHTML = '<p>No articles yet.</p>';
+                articlesCountDiv.textContent = 'Total: 0';
+                return;
+            }
+            articlesCountDiv.textContent = `Total: ${querySnapshot.size}`;
+            var html = '<ul>';
+            querySnapshot.forEach(function(doc) {
+                var data = doc.data();
+                html += `<li><a href="article.html?id=${doc.id}" style="color:#388e3c;text-decoration:underline;">${data.title}</a></li>`;
+            });
+            html += '</ul>';
+            articlesDiv.innerHTML = html;
+        }).catch(function(err) {
+            articlesDiv.innerHTML = `<p style='color:red;'>Error loading articles: ${err.message}</p>`;
+        });
+    }
+
+    // Load research
+    function loadResearch() {
+        db.collection('research').orderBy('created', 'desc').get().then(function(querySnapshot) {
+            var researchDiv = document.getElementById('admin-research-list');
+            var researchCountDiv = document.getElementById('research-count');
+            researchCountDiv.textContent = `Total: ${querySnapshot.size}`;
+            let html = '<ul>';
+            if (querySnapshot.empty) {
+                html += '<li style="color:gray;">No research yet.</li>';
+            } else {
+                querySnapshot.forEach(function(doc) {
+                    var data = doc.data();
+                    html += `<li><a href="research.html?id=${doc.id}" style="color:#388e3c;text-decoration:underline;">${data.title}</a></li>`;
+                });
+            }
+            html += '</ul>';
+            researchDiv.innerHTML = html;
+        }).catch(function(err) {
+            var researchDiv = document.getElementById('admin-research-list');
+            researchDiv.innerHTML = `<p style='color:red;'>Error loading research: ${err.message}</p>`;
+        });
+    }
+
+    // Load projects
+    function loadProjects() {
+        db.collection('projects').orderBy('created', 'desc').get().then(function(querySnapshot) {
+            var projectsDiv = document.getElementById('projects-list');
+            if (querySnapshot.empty) {
+                projectsDiv.innerHTML = '<p>No projects yet.</p>';
+                return;
+            }
+            var html = '<ul>';
+            querySnapshot.forEach(function(doc) {
+                var data = doc.data();
+                html += `<li><a href="project.html?id=${doc.id}" style="color:#388e3c;text-decoration:underline;">${data.title}</a></li>`;
+            });
+            html += '</ul>';
+            projectsDiv.innerHTML = html;
+        }).catch(function(err) {
+            var projectsDiv = document.getElementById('projects-list');
+            projectsDiv.innerHTML = `<p style='color:red;'>Error loading projects: ${err.message}</p>`;
+        });
+    }
+
+    // Load events
+    function loadEvents() {
+        db.collection('events').orderBy('date', 'asc').get().then(function(querySnapshot) {
+            var eventsDiv = document.getElementById('events-list');
+            if (querySnapshot.empty) {
+                eventsDiv.innerHTML = '<p>No upcoming events.</p>';
+                return;
+            }
+            var html = '<ul>';
+            querySnapshot.forEach(function(doc) {
+                var data = doc.data();
+                html += `<li><strong>${data.title}</strong> - ${data.date}<br>${data.description}</li>`;
+            });
+            html += '</ul>';
+            eventsDiv.innerHTML = html;
+        }).catch(function(err) {
+            var eventsDiv = document.getElementById('events-list');
+            eventsDiv.innerHTML = `<p style='color:red;'>Error loading events: ${err.message}</p>`;
+        });
+    }
+
+    // Edit/Delete handlers
+    function editArticle(id) {
+        db.collection('articles').doc(id).get().then(function(doc) {
+            if (!doc.exists) return;
+            var data = doc.data();
+            var newTitle = prompt('Edit article title:', data.title);
+            if (newTitle === null) return;
+            var newContent = prompt('Edit article content:', data.content);
+            if (newContent === null) return;
+            db.collection('articles').doc(id).update({ title: newTitle, content: newContent }).then(loadArticles);
+        });
+    }
+    function deleteArticle(id) {
+        if (confirm('Delete this article?')) {
+            db.collection('articles').doc(id).delete().then(loadArticles);
+        }
+    }
+    function editResearch(id) {
+        db.collection('research').doc(id).get().then(function(doc) {
+            if (!doc.exists) return;
+            var data = doc.data();
+            var newTitle = prompt('Edit research title:', data.title);
+            if (newTitle === null) return;
+            var newQuestion = prompt('Edit research question/objective:', data.question || '');
+            if (newQuestion === null) return;
+            var newBackground = prompt('Edit background/rationale:', data.background || '');
+            if (newBackground === null) return;
+            var newLocation = prompt('Edit location/scope:', data.location || '');
+            if (newLocation === null) return;
+            var newMethodology = prompt('Edit methodology:', data.methodology || '');
+            if (newMethodology === null) return;
+            var newSample = prompt('Edit sample size & population:', data.sample || '');
+            if (newSample === null) return;
+            var newTopic = prompt('Edit topic:', data.topic || '');
+            if (newTopic === null) return;
+            var newFindings = prompt('Edit findings/results:', data.findings || '');
+            if (newFindings === null) return;
+            var newDiscussion = prompt('Edit discussion:', data.discussion || '');
+            if (newDiscussion === null) return;
+            var newRecommendations = prompt('Edit recommendations:', data.recommendations || '');
+            if (newRecommendations === null) return;
+            var newConclusion = prompt('Edit conclusion:', data.conclusion || '');
+            if (newConclusion === null) return;
+            // For dataTable, just allow editing as JSON for simplicity
+            var newDataTable = prompt('Edit data table (JSON array):', JSON.stringify(data.dataTable || []));
+            let parsedDataTable = [];
+            try { parsedDataTable = JSON.parse(newDataTable); } catch(e) {}
+            db.collection('research').doc(id).update({
+                title: newTitle,
+                question: newQuestion,
+                background: newBackground,
+                location: newLocation,
+                methodology: newMethodology,
+                sample: newSample,
+                topic: newTopic,
+                findings: newFindings,
+                discussion: newDiscussion,
+                recommendations: newRecommendations,
+                conclusion: newConclusion,
+                dataTable: parsedDataTable
+            }).then(loadResearch);
+        });
+    }
+    function deleteResearch(id) {
+        if (confirm('Delete this research item?')) {
+            db.collection('research').doc(id).delete().then(loadResearch);
+        }
+    }
+    document.getElementById('project-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var form = e.target;
+        var project = {
+            title: form.title.value,
+            category: form.category.value,
+            goal: form.goal.value,
+            activities: form.activities.value,
+            target: form.target.value,
+            impact: form.impact.value,
+            status: form.status.value,
+            created: new Date()
+        };
+        db.collection('projects').add(project).then(function() {
+            document.getElementById('project-status').innerText = 'Project added!';
+            form.reset();
+            loadProjects();
+        }).catch(function(err) {
+            document.getElementById('project-status').innerText = 'Error: ' + err.message;
+        });
+    });
+    function editProject(id) {
+        db.collection('projects').doc(id).get().then(function(doc) {
+            if (!doc.exists) return;
+            var data = doc.data();
+            var newTitle = prompt('Edit project title:', data.title);
+            if (newTitle === null) return;
+            var newCategory = prompt('Edit category:', data.category);
+            if (newCategory === null) return;
+            var newGoal = prompt('Edit goal/objective:', data.goal);
+            if (newGoal === null) return;
+            var newActivities = prompt('Edit activities:', data.activities);
+            if (newActivities === null) return;
+            var newTarget = prompt('Edit target group:', data.target);
+            if (newTarget === null) return;
+            var newImpact = prompt('Edit impact metrics:', data.impact);
+            if (newImpact === null) return;
+            var newStatus = prompt('Edit status:', data.status);
+            if (newStatus === null) return;
+            db.collection('projects').doc(id).update({
+                title: newTitle,
+                category: newCategory,
+                goal: newGoal,
+                activities: newActivities,
+                target: newTarget,
+                impact: newImpact,
+                status: newStatus
+            }).then(loadProjects);
+        });
+    }
+    function deleteProject(id) {
+        if (confirm('Delete this project?')) {
+            db.collection('projects').doc(id).delete().then(loadProjects);
+        }
+    }
+    document.getElementById('event-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var form = e.target;
+        var event = {
+            title: form.title.value,
+            date: form.date.value,
+            description: form.description.value,
+            created: new Date()
+        };
+        db.collection('events').add(event).then(function() {
+            document.getElementById('event-status').innerText = 'Event added!';
+            form.reset();
+            loadEvents();
+        }).catch(function(err) {
+            document.getElementById('event-status').innerText = 'Error: ' + err.message;
+        });
+    });
+    function editEvent(id) {
+        db.collection('events').doc(id).get().then(function(doc) {
+            if (!doc.exists) return;
+            var data = doc.data();
+            var newTitle = prompt('Edit event title:', data.title);
+            if (newTitle === null) return;
+            var newDate = prompt('Edit event date:', data.date);
+            if (newDate === null) return;
+            var newDescription = prompt('Edit event description:', data.description);
+            if (newDescription === null) return;
+            db.collection('events').doc(id).update({
+                title: newTitle,
+                date: newDate,
+                description: newDescription
+            }).then(loadEvents);
+        });
+    }
+    function deleteEvent(id) {
+        if (confirm('Delete this event?')) {
+            db.collection('events').doc(id).delete().then(loadEvents);
+        }
+    }
+</script>
+</body>
+</html>

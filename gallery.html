@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - Save the Environment</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <style>
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5em;
+            margin: 2em 0;
+        }
+        .gallery-item {
+            background: #fafafa;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px #e0e0e0;
+            overflow: hidden;
+            text-align: center;
+            padding: 1em;
+        }
+        .gallery-item img {
+            max-width: 100%;
+            border-radius: 6px;
+            margin-bottom: 0.5em;
+        }
+        .gallery-caption {
+            font-size: 1em;
+            color: #388e3c;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Project & Event Gallery</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="projects.html">Projects</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Our Impact in Photos</h2>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <img src="assets/gallery/tree-planting.jpg" alt="Tree Planting">
+                    <div class="gallery-caption">Tree Planting Day</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/gallery/clean-water.jpg" alt="Clean Water Project">
+                    <div class="gallery-caption">Clean Water Project</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/gallery/waste-management.jpg" alt="Waste Management">
+                    <div class="gallery-caption">Waste Management Workshop</div>
+                </div>
+                <div class="gallery-item">
+                    <img src="assets/gallery/community-health.jpg" alt="Community Health Initiative">
+                    <div class="gallery-caption">Community Health Initiative</div>
+                </div>
+                <!-- Add more images as needed -->
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Save the Environment Initiative</p>
+    </footer>
+</body>
+</html>

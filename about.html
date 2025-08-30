@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Save the Environment</title>
+    <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+    <header>
+        <h1>About Us</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="about.html">About Us</a>
+            <a href="projects.html">Projects</a>
+            <a href="articles.html">Articles</a>
+            <a href="gallery.html">Gallery</a>
+            <a href="calendar.html">Calendar</a>
+            <a href="newsletter.html">Newsletter</a>
+            <a href="admin.html" id="admin-link" style="display:none;">Admin</a>
+            <a href="get-involved.html">Get Involved</a>
+            <a href="contact.html">Contact</a>
+        </nav>
+        <!-- Social Media Links -->
+        <div>
+            <!--#include file="assets/social.html" -->
+        </div>
+        </nav>
+    </header>
+    <main>
+        <section>
+            <h2>Our Story</h2>
+            <p>Save the Environment was born from a simple idea: we can no longer ignore the rubbish, contaminated water, and unhealthy living conditions in our community. Every day, families face challenges with waste, unsafe water, and pollution, which threaten both health and the environment.</p>
+            <p>It began with one small step — a clean-up activity in the community — and today it is growing into a movement that empowers people to take action together. We believe that protecting our environment is not only about saving nature but also about improving daily life, creating healthier spaces, and giving everyone the chance to live with dignity and hope.</p>
+        </section>
+        <section>
+            <h2>Our Mission</h2>
+            <p>To build a cleaner, greener, and healthier community by promoting sustainable living, reducing waste, and restoring nature through education, action, and collaboration.</p>
+        </section>
+        <section>
+            <h2>Our Vision</h2>
+            <p>A future where every person has access to clean water, fresh air, and safe surroundings, and where communities thrive in harmony with the environment.</p>
+        </section>
+        <section>
+            <h2>Our Core Values</h2>
+            <ul>
+                <li><strong>Community</strong> – We believe change starts with people working together.</li>
+                <li><strong>Sustainability</strong> – Every action should protect the future.</li>
+                <li><strong>Education</strong> – Awareness and knowledge empower lasting change.</li>
+                <li><strong>Action</strong> – Small steps create big impact.</li>
+            </ul>
+        </section>
+        <section>
+            <h2>Our SDG Focus</h2>
+            <p>Save the Environment aligns its projects with the United Nations Sustainable Development Goals (SDGs):</p>
+            <ul>
+                <li><strong>SDG 6: Clean Water and Sanitation 💧</strong> – Because safe, clean water is a basic human right, and our community suffers from contaminated water.</li>
+                <li><strong>SDG 12: Responsible Consumption and Production ♻️</strong> – Promoting recycling, reducing plastic waste, and encouraging sustainable practices.</li>
+                <li><strong>SDG 13: Climate Action 🌍</strong> – Planting trees, reducing pollution, and raising awareness to fight climate change.</li>
+                <li><strong>SDG 15: Life on Land 🌱</strong> – Protecting ecosystems, cleaning our surroundings, and restoring biodiversity.</li>
+                <li><strong>(Supporting) SDG 3: Good Health and Well-being 🏥</strong> – Because environmental health directly impacts community health.</li>
+            </ul>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Save the Environment Initiative</p>
+    </footer>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+<script>
+    var firebaseConfig = {
+        apiKey: "AIzaSyCeTfoIIWlPkn68sZe-0m8oHUgxLgIiyRA",
+        authDomain: "save-the-environment-49649.firebaseapp.com",
+        projectId: "save-the-environment-49649",
+        storageBucket: "save-the-environment-49649.firebasestorage.app",
+        messagingSenderId: "724730117051",
+        appId: "1:724730117051:web:4bec6010aedccec0a5e29e",
+        measurementId: "G-S4ZSM54DY1"
+    };
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    var auth = firebase.auth();
+    document.addEventListener('DOMContentLoaded', function() {
+            auth.onAuthStateChanged(function(user) {
+                var adminLink = document.getElementById('admin-link');
+                if (user) {
+                    adminLink.style.display = 'inline';
+                } else {
+                    adminLink.style.display = 'none';
+                    console.log('You are not signed in. You cannot access the admin page.');
+                }
+            });
+    });
+</script>
+</body>
+</html>
