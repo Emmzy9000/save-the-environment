@@ -1,3 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<div id="event-details"></div>
+<script>
 function renderEvent(data) {
     let html = `<h2>${data.title}</h2>`;
     html += `<strong>Date:</strong> <div>${data.date || ''}</div><br>`;
@@ -64,3 +72,6 @@ function loadEvent() {
     });
 }
 loadEvent();
+</script>
+</body>
+</html>
