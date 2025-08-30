@@ -22,6 +22,8 @@
             <label>Event Title:<br><input type="text" name="title" required></label><br>
             <label>Date:<br><input type="date" name="date" required></label><br>
             <label>Location:<br><input type="text" name="location" required></label><br>
+            <label>Organizer:<br><input type="text" name="organizer" required></label><br>
+            <label>Contact:<br><input type="text" name="contact" required></label><br>
             <label>Description:<br><textarea name="description" required></textarea></label><br>
             <button type="submit">Add Event</button>
         </form>
@@ -51,6 +53,8 @@
             title: form.title.value,
             date: form.date.value,
             location: form.location.value,
+            organizer: form.organizer.value,
+            contact: form.contact.value,
             description: form.description.value,
             created: new Date()
         };

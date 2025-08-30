@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details - Save the Environment</title>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Event Details</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="projects.html">Projects</a>
+            <a href="event.html">All Events</a>
+        </nav>
+    </header>
+    <main>
+        <section id="event-details" style="max-width:700px;margin:auto;"></section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Save the Environment Initiative</p>
+    </footer>
+<script>
+function getEventIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id');
+}
+var firebaseConfig = {
+    apiKey: "AIzaSyCeTfoIIWlPkn68sZe-0m8oHUgxLgIiyRA",
+    authDomain: "save-the-environment-49649.firebaseapp.com",
+    projectId: "save-the-environment-49649",
+    storageBucket: "save-the-environment-49649.firebasestorage.app",
+    messagingSenderId: "724730117051",
+    appId: "1:724730117051:web:4bec6010aedccec0a5e29e",
+    measurementId: "G-S4ZSM54DY1"
+};
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+var db = firebase.firestore();
+var id = getEventIdFromUrl();
+function renderEvent(data) {
+    let html = `<h2>${data.title}</h2>`;
+    html += `<strong>Date:</strong> <div>${data.date || ''}</div><br>`;
+    html += `<strong>Location:</strong> <div>${data.location || ''}</div><br>`;
+    html += `<strong>Description:</strong> <div>${data.description || ''}</div><br>`;
+    html += `<strong>Organizer:</strong> <div>${data.organizer || ''}</div><br>`;
+    html += `<strong>Contact:</strong> <div>${data.contact || ''}</div><br>`;
+    if (data.imageUrl) {
+        html += `<img src="${data.imageUrl}" alt="Event Image" style="max-width:300px;border-radius:8px;margin:1em 0;" /><br>`;
+    }
+    document.getElementById('event-details').innerHTML = html;
+}
+function loadEvent() {
+    if (!id) {
+        document.getElementById('event-details').innerHTML = '<p style="color:red;">No event selected.</p>';
+        return;
+    }
+    db.collection('events').doc(id).get().then(function(doc) {
+        if (!doc.exists) {
+            document.getElementById('event-details').innerHTML = '<p style="color:red;">Event not found.</p>';
+            return;
+        }
+        renderEvent(doc.data());
+    }).catch(function(err) {
+        document.getElementById('event-details').innerHTML = `<p style='color:red;'>Error loading event: ${err.message}</p>`;
+    });
+}
+loadEvent();
+</script>
+</body>
+</html>
