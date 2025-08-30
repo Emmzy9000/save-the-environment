@@ -56,9 +56,8 @@
         </section>
         <section class="upcoming-events">
             <h3>Upcoming Events</h3>
-            <ul>
-                <li>Tree Planting Drive - Sept 15</li>
-                <li>Community Clean-Up - Oct 10</li>
+            <ul id="events-list">
+                <!-- Events will be loaded here -->
             </ul>
         </section>
         <section class="participate">
@@ -84,21 +83,22 @@
         firebase.initializeApp(firebaseConfig);
     }
     var auth = firebase.auth();
+    var db = firebase.firestore();
     document.addEventListener('DOMContentLoaded', function() {
-                auth.onAuthStateChanged(function(user) {
-                    var adminLink = document.getElementById('admin-link');
-                    var dashboardLink = document.getElementById('dashboard-link');
-                    if (user) {
-                        adminLink.style.display = 'inline';
-                        dashboardLink.style.display = 'inline';
-                    } else {
-                        adminLink.style.display = 'none';
-                        dashboardLink.style.display = 'none';
-                        setTimeout(function() {
-                            console.log('You are not signed in. You cannot access the admin page.');
-                        }, 100);
-                    }
-                });
+        auth.onAuthStateChanged(function(user) {
+            var adminLink = document.getElementById('admin-link');
+            var dashboardLink = document.getElementById('dashboard-link');
+            if (user) {
+                adminLink.style.display = 'inline';
+                dashboardLink.style.display = 'inline';
+            } else {
+                adminLink.style.display = 'none';
+                dashboardLink.style.display = 'none';
+                setTimeout(function() {
+                    console.log('You are not signed in. You cannot access the admin page.');
+                }, 100);
+            }
+        });
         var signoutBtn = document.getElementById('signout-btn');
         if (signoutBtn) {
             signoutBtn.onclick = function() {
@@ -107,6 +107,24 @@
                 });
             };
         }
+        // Load events from Firestore
+        db.collection('events').orderBy('date').get().then(function(querySnapshot) {
+            var eventsList = document.getElementById('events-list');
+            eventsList.innerHTML = '';
+            querySnapshot.forEach(function(doc) {
+                var event = doc.data();
+                var dateStr = event.date ? new Date(event.date).toLocaleDateString() : '';
+                var li = document.createElement('li');
+                li.innerHTML = `<strong>${event.title}</strong> - ${dateStr} <br> <span style='color:#388e3c;'>${event.location || ''}</span>`;
+                eventsList.appendChild(li);
+            });
+            if (!eventsList.hasChildNodes()) {
+                eventsList.innerHTML = '<li>No upcoming events yet.</li>';
+            }
+        }).catch(function(err) {
+            var eventsList = document.getElementById('events-list');
+            eventsList.innerHTML = `<li style='color:red;'>Error loading events: ${err.message}</li>`;
+        });
     });
 </script>
 </html>
