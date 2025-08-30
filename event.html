@@ -6,6 +6,11 @@
 <body>
 <div id="event-details"></div>
 <script>
+function getEventIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id');
+}
+var id = getEventIdFromUrl();
 function renderEvent(data) {
     let html = `<h2>${data.title}</h2>`;
     html += `<strong>Date:</strong> <div>${data.date || ''}</div><br>`;
@@ -61,6 +66,10 @@ function showEditForm(data) {
     };
 }
 function loadEvent() {
+    if (!id) {
+        document.getElementById('event-details').innerHTML = '<p style="color:red;">No event selected.</p>';
+        return;
+    }
     db.collection('events').doc(id).get().then(function(doc) {
         if (!doc.exists) {
             document.getElementById('event-details').innerHTML = '<p style="color:red;">Event not found.</p>';
