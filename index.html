@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Save the Environment</title>
+    <title>Save the Environment - Home</title>
     <link rel="stylesheet" href="assets/style.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
@@ -50,10 +50,22 @@
             <button id="signout-btn" style="float:right; margin:1rem 0;">Sign Out</button>
             <a href="auth.html" style="float:right; margin:1rem 1rem 0 0;">Sign In</a>
         </section>
-        <section class="impact-stories">
-            <h3>Impact Stories</h3>
-            <p>Read how small actions have made a big difference.</p>
+        <!-- Impact Stories Section -->
+        <section>
+            <h2>Impact Stories</h2>
+            <div class="card">
+                <img src="assets/impact/clean-water.jpg" alt="Clean Water Success" style="width:100%;max-width:300px;border-radius:12px;">
+                <h3>Clean Water for Kalonga</h3>
+                <p>After our water project, 200 families now have access to safe drinking water. "Our children are healthier and happier," says Mary, a local mother.</p>
+            </div>
+            <div class="card">
+                <img src="assets/impact/tree-planting.jpg" alt="Tree Planting" style="width:100%;max-width:300px;border-radius:12px;">
+                <h3>Greener Schools</h3>
+                <p>Students planted 500 trees in 2025, transforming their school grounds and learning about climate action.</p>
+            </div>
+            <!-- Add more cards for other stories as needed -->
         </section>
+
         <section class="upcoming-events">
             <h3>Upcoming Events</h3>
             <ul id="events-list">
@@ -127,4 +139,5 @@
         });
     });
 </script>
+</body>
 </html>
