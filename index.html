@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Save the Environment - Home</title>
+    <title>Save the Environment – Together for a Cleaner Future</title>
     <link rel="stylesheet" href="assets/style.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
@@ -32,40 +32,47 @@
         </nav>
     </header>
     <main>
-        <section class="hero">
-            <h2>Small Acts, Big Change</h2>
-            <p>Protecting nature and promoting sustainable living in our community.</p>
-            <div class="hero-images" style="display:flex;gap:2rem;justify-content:center;align-items:center;margin-top:1.5rem;">
-                <div style="text-align:center;">
-                    <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=600&q=80" alt="Human planting a tree" style="max-width:340px;border-radius:12px;box-shadow:0 2px 12px #aaa;">
-                    <div style="margin-top:0.5rem;font-size:1.05em;color:#2d6a4f;">Planting a tree</div>
-                </div>
-                <div style="text-align:center;">
-                    <img src="https://images.unsplash.com/photo-1528323273322-d81458248d40?auto=format&fit=crop&w=600&q=80" alt="Human putting rubbish in a bin" style="max-width:340px;border-radius:12px;box-shadow:0 2px 12px #aaa;">
-                    <div style="margin-top:0.5rem;font-size:1.05em;color:#2d6a4f;">Cleaning up rubbish</div>
-                </div>
+        <!-- Image Carousel Section -->
+        <div class="image-carousel">
+            <div class="carousel-track">
+                <img src="https://imgur.com/IdV4HEJ.jpg" alt="Community Action">
+                <img src="https://i.imgur.com/dgkV6oP.jpg" alt="Tree Planting">
+                <img src="https://imgur.com/uWnb5IY.jpg" alt="Clean Up">
+               <img src="https://imgur.com/qU59LmX.jpg" alt="Clean Up">
+                <img src="https://imgur.com/HBdvG5G.jpg" alt="Clean Up">
+                <!-- Duplicate images for seamless loop -->
+                <img src="https://imgur.com/IdV4HEJ.jpg" alt="Community Action">
+                <img src="https://i.imgur.com/dgkV6oP.jpg" alt="Tree Planting">
+                <img src="https://imgur.com/uWnb5IY.jpg" alt="Clean Up">
+               <img src="https://imgur.com/qU59LmX.jpg" alt="Clean Up">
+                <img src="https://imgur.com/HBdvG5G.jpg" alt="Clean Up">
             </div>
-        </section>
+        </div>
+        <!-- End of Carousel Section -->
+
+        <!-- Other homepage sections go below -->
         <section>
             <button id="signout-btn" style="float:right; margin:1rem 0;">Sign Out</button>
             <a href="auth.html" style="float:right; margin:1rem 1rem 0 0;">Sign In</a>
         </section>
+
         <!-- Impact Stories Section -->
         <section>
-            <h2>Impact Stories</h2>
+            <h2>What we Plan to Achieve</h2>
             <div class="card">
-                <img src="assets/impact/clean-water.jpg" alt="Clean Water Success" style="width:100%;max-width:300px;border-radius:12px;">
-                <h3>Clean Water for Kalonga</h3>
-                <p>After our water project, 200 families now have access to safe drinking water. "Our children are healthier and happier," says Mary, a local mother.</p>
+                 <img src="https://imgur.com/WhQrny1.jpg" alt="Clean Up">
+                <h3>Help Communities with Access to Clean Water</h3>
+                <p>We plan to make clean water Accesible to everyone,this way we prevent water born diseases.</p>
             </div>
             <div class="card">
-                <img src="assets/impact/tree-planting.jpg" alt="Tree Planting" style="width:100%;max-width:300px;border-radius:12px;">
+                <img src="https://imgur.com/DHcxTqQ.jpg" alt="Clean Up">
                 <h3>Greener Schools</h3>
                 <p>Students planted 500 trees in 2025, transforming their school grounds and learning about climate action.</p>
             </div>
             <!-- Add more cards for other stories as needed -->
         </section>
 
+        <!-- Upcoming Events Section -->
         <section class="upcoming-events">
             <h3>Upcoming Events</h3>
             <ul id="events-list">
